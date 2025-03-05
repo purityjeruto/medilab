@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from medapp.models import *
 # Create your views here.
 def home (request):
@@ -25,7 +25,7 @@ def appointment1(request):
             message = request.POST['message'],
         )
        myappointments.save()
-       return redirect('/appointment')
+       return redirect('/show')
 
     else:
           return render(request,'appointment.html')
@@ -43,3 +43,30 @@ def contact1(request):
 
     else:
           return render(request,'contact.html')
+
+def show (request):
+    all=appointment.objects.all()
+    return render(request, 'show.html',{'all':all})
+
+def delete(request,id):
+    deleteappointment=appointment.objects.get(id=id)
+    deleteappointment.delete()
+    return redirect('/show')
+
+def edit(request,id):
+    appointment1= get_object_or_404(appointment,id=id)
+    if request.method =='POST':
+            appointment1.name = request.POST['name'],
+            appointment1.email = request.POST['email'],
+            appointment1.phone= request.POST['phone'],
+            appointment1.date= request.POST['date'],
+            appointment1.department= request.POST['department'],
+            appointment1.doctor= request.POST['doctor'],
+            appointment1.message = request.POST['message']
+            appointment1.save()
+            return redirect('/show')
+    else:
+        return render(request, 'edit.html', {'appointment1': appointment1})
+
+
+
